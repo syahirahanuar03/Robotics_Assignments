@@ -22,7 +22,7 @@ function varargout = G1_ASSIGNMENT_1(varargin)
 
 % Edit the above text to modify the response to help G1_ASSIGNMENT_1
 
-% Last Modified by GUIDE v2.5 27-Dec-2022 22:50:06
+% Last Modified by GUIDE v2.5 29-Dec-2022 08:55:21
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -263,6 +263,7 @@ function fwdbutton_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
+
 L1 = 0; L2 = 431.8; L3 = -20.32; L4 = 0; L5 = 0; L6 = 0;
 
 L(1) = Link ([0 0 L1 0 pi/2]);
@@ -287,6 +288,64 @@ T = Robot.fkine ([th1 th2 th3 th4 th5 th6]);
 handles.edit7.String = num2str(floor(T.t(1)));  %Pos X
 handles.edit8.String = num2str(floor(T.t(2)));  %Pos Y
 handles.edit9.String = num2str(floor(T.t(3)));  %Pos Z
+
+%---------------------------------------------------------------%
+%---------------CALCULATION HTM---------------------------%
+
+%L1
+A1 = 0; Alpha1 = -pi/2; D1 = 0; T1 = 0;
+
+%L2
+A2 = 431.8; Alpha2 = 0; D2 = 149.09; T2 = pi/4;
+
+%L3
+A3 = -20.32; Alpha3 = pi/2; D3 = 0; T3 = pi/1.8;
+
+%L4
+A4 = 0; Alpha4 = -pi/2; D4 = 433.07; T4 = pi/2;
+
+%L5
+A5 = 0; Alpha5 = pi/2; D5=0; T5 = -pi/4;
+
+%L6
+A6 = 0; Alpha6 = 0; D6 = 56.25; T6 = pi/2;
+
+H1 = [cos(T1) -sin(T1)*cos(Alpha1) sin(T1)*sin(Alpha1) A1*cos(T1);
+        sin(T1) cos(T1)*cos(Alpha1) -cos(T1)*sin(Alpha1) A1*sin(T1);
+        0       sin(Alpha1)         cos(Alpha1)          D1;
+        0           0                   0                1;];
+
+H2 = [cos(T2) -sin(T2)*cos(Alpha2) sin(T2)*sin(Alpha2) A2*cos(T2);
+        sin(T2) cos(T2)*cos(Alpha2) -cos(T2)*sin(Alpha2) A2*sin(T2);
+        0       sin(Alpha2)         cos(Alpha2)          D2;
+        0           0                   0                1;];
+
+H3 = [cos(T3) -sin(T3)*cos(Alpha3) sin(T3)*sin(Alpha3) A3*cos(T3);
+        sin(T3) cos(T3)*cos(Alpha3) -cos(T3)*sin(Alpha3) A3*sin(T3);
+        0       sin(Alpha3)         cos(Alpha1)          D3;
+        0           0                   0                1;];
+
+H4 = [cos(T4) -sin(T4)*cos(Alpha4) sin(T4)*sin(Alpha4) A4*cos(T4);
+        sin(T4) cos(T4)*cos(Alpha4) -cos(T4)*sin(Alpha4) A4*sin(T4);
+        0       sin(Alpha4)         cos(Alpha4)          D4;
+        0           0                   0                1;];
+ 
+H5 = [cos(T5) -sin(T5)*cos(Alpha5) sin(T1)*sin(Alpha5) A1*cos(T5);
+        sin(T5) cos(T5)*cos(Alpha5) -cos(T1)*sin(Alpha5) A1*sin(T5);
+        0       sin(Alpha5)         cos(Alpha5)          D5;
+        0           0                   0                1;];
+    
+H6 = [cos(T6) -sin(T6)*cos(Alpha6) sin(T6)*sin(Alpha6) A1*cos(T6);
+        sin(T6) cos(T6)*cos(Alpha6) -cos(T6)*sin(Alpha6) A1*sin(T6);
+        0       sin(Alpha6)         cos(Alpha6)          D6;
+        0           0                   0                1;];
+
+H0_6 = H1 * H2 * H3 * H4 * H5 * H6;
+
+
+
+handles.text13.String = num2str(H0_6);
+
 
 % --- Executes on button press in invbutton.
 function invbutton_Callback(hObject, eventdata, handles)
@@ -328,3 +387,10 @@ handles.edit6.String = num2str(floor(J(6)));
 Robot.plot(J*pi/180); %done
  
  
+
+
+% --- Executes during object creation, after setting all properties.
+function text13_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to text13 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
