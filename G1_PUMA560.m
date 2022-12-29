@@ -22,7 +22,7 @@ function varargout = G1_PUMA560(varargin)
 
 % Edit the above text to modify the response to help G1_PUMA560
 
-% Last Modified by GUIDE v2.5 29-Dec-2022 11:37:19
+% Last Modified by GUIDE v2.5 29-Dec-2022 23:01:07
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -353,25 +353,43 @@ PX = str2double (handles.edit7.String);
 PY = str2double (handles.edit8.String);
 PZ = str2double (handles.edit9.String);
 
-L1 = 0; L2 = 431.8; L3 = -20.32; L4 = 0; L5 = 0; L6 = 0;
+%L1
+A1 = 0; Alpha1 = -pi/2; D1 = 0; T1 = 0;
 
-L(1) = Link ([0 0 L1 0 pi/2]);
-L(2) = Link ([0 0 L2 0 pi/2]);
-L(3) = Link ([0 0 L3 0 pi/2]);
-L(4) = Link ([0 0 L4 0 pi/2]);
-L(5) = Link ([0 0 L5 0 pi/2]);
-L(6) = Link ([0 0 L6 0 pi/2]);
+%L2
+A2 = 431.8; Alpha2 = 0; D2 = 149.09; T2 = pi/4;
+
+%L3
+A3 = -20.32; Alpha3 = pi/2; D3 = 0; T3 = pi/1.8;
+
+%L4
+A4 = 0; Alpha4 = -pi/2; D4 = 433.07; T4 = pi/2;
+
+%L5
+A5 = 0; Alpha5 = pi/2; D5=0; T5 = -pi/4;
+
+%L6
+A6 = 0; Alpha6 = 0; D6 = 56.25; T6 = pi/2;
+
+%L = LInk ([ th d a alpha])
+
+L(1) = Link ([T1 D1 A1 Alpha1]);
+L(2) = Link ([T2 D2 A2 Alpha2]);
+L(3) = Link ([T3 D3 A3 Alpha3]);
+L(4) = Link ([T4 D4 A4 Alpha4]);
+L(5) = Link ([T5 D5 A5 Alpha5]);
+L(6) = Link ([T6 D6 A6 Alpha6]);
 
 
 Robot = SerialLink(L);
 Robot.name = 'G1_PUMA_560';
 
-T = [1   0   0   PX ;
-     0   1   1   PY ;
-     0   0   0   PZ ;
-     0   0   0   1;];
+T = [1 0 0 PX ;
+     0 1 0 PY ;
+     0 0 1 PZ ;
+     0 0 0 1 ];
  
-J = Robot.ikine (T,[0 0 0], 'mask', [1 1 1 0 0 0])*180/pi;
+J = Robot.ikine (T,[0 0 0 0 0 0], [1 1 1 1 1 1])*180/pi; %6 d.o.f
  
 handles.edit1.String = num2str(floor(J(1)));
 handles.edit2.String = num2str(floor(J(2)));
@@ -388,3 +406,26 @@ function text11_CreateFcn(hObject, eventdata, handles)
 % hObject    handle to text11 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
+
+
+
+function edit1_Callback(hObject, eventdata, handles)
+% hObject    handle to edit1 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of edit1 as text
+%        str2double(get(hObject,'String')) returns contents of edit1 as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function edit1_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to edit1 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
